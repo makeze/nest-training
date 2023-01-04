@@ -1,9 +1,7 @@
-import { ConfigType } from '@nestjs/config';
-import coffeesConfig from 'src/coffees/config/coffees.config'
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm/dist';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
-import { Event } from 'src/events/entities/event.entity';
+import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { Event } from '../events/entities/event.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
@@ -18,9 +16,7 @@ export class CoffeesService {
         private readonly coffeeRepository: Repository<Coffee>,
         @InjectRepository(Flavor)
         private readonly flavorRepository: Repository<Flavor>,
-        private readonly dataSource: DataSource,
-        @Inject(coffeesConfig.KEY)
-        private coffeesConfiguration: ConfigType<typeof coffeesConfig>
+        private readonly dataSource: DataSource
     ) {}
 
     async findAll(paginationQueryDto: PaginationQueryDto) {
@@ -43,7 +39,7 @@ export class CoffeesService {
         });
 
         if (!coffee) {
-            throw new NotFoundException('Coffee id does not exist.');
+            throw new NotFoundException(`Coffee #${id} was not found.`);
         }
 
         return coffee;
